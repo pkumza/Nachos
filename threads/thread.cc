@@ -87,6 +87,19 @@ Thread::~Thread()
 void 
 Thread::Fork(VoidFunctionPtr func, int arg)
 {
+    if (threadCount >= MAX_THREAD_NUM) {
+        // Do I need some action?
+        return;
+    }
+    threadCount++;
+    for (int i = 0; i < MAX_THREAD_NUM; i++) {
+        if (allThreads[i] == NULL){
+            allThreads[i] = this;
+            SetThreadID(i);
+            
+            break;
+        }
+    }
     DEBUG('t', "Forking thread \"%s\" with func = 0x%x, arg = %d\n",
 	  name, (int) func, arg);
     
@@ -149,6 +162,10 @@ Thread::Finish ()
     DEBUG('t', "Finishing thread \"%s\"\n", getName());
     
     threadToBeDestroyed = currentThread;
+    
+    allThreads[threadID] = NULL;
+    threadCount--;
+    
     Sleep();					// invokes SWITCH
     // not reached
 }
@@ -283,8 +300,38 @@ Thread::StackAllocate (VoidFunctionPtr func, int arg)
     machineState[WhenDonePCState] = (int) ThreadFinish;
 }
 
+//----------------------------------------------------------------------
+// Thread::GetUserID
+//	about ID 
+//----------------------------------------------------------------------
+
+int
+Thread::GetUserID()
+{
+    return this->userID;
+}
+
+int
+Thread::GetThreadID()
+{
+    return this->threadID;
+}
+
+void
+Thread::SetUserID(int _id)
+{
+    this->userID = _id;
+}
+
+void
+Thread::SetThreadID(int _id)
+{
+    this->threadID = _id;
+}
+
 #ifdef USER_PROGRAM
 #include "machine.h"
+
 
 //----------------------------------------------------------------------
 // Thread::SaveUserState

@@ -28,11 +28,34 @@ void
 SimpleThread(int which)
 {
     int num;
+
+    for (num = 0; num < 5; num++) {
+	    printf("*** thread %d id %d looped %d times\n", which, currentThread->GetThreadID(), num);
+        
+        for(int i = 0; i < 128; i++) { 
+            if (allThreads[i] == currentThread) {
+            }
+        }
+        
+        currentThread->Yield();
+        
+    }
+}
+
+void
+SimpleThread2(int which)
+{
+    int num;
     
     for (num = 0; num < 5; num++) {
-	printf("*** thread %d looped %d times\n", which, num);
+	printf("*** thread %d id %d looped %d times\n", which, currentThread->GetThreadID(), num);
         currentThread->Yield();
     }
+    // 每个
+    Thread *t = new Thread("forked thread");
+    t->Fork(SimpleThread2, 1);
+    t = new Thread("forked thread");
+    t->Fork(SimpleThread2, 1);
 }
 
 //----------------------------------------------------------------------
@@ -53,6 +76,49 @@ ThreadTest1()
 }
 
 //----------------------------------------------------------------------
+// ThreadTest2
+// 	Create 2 forked threads.
+//----------------------------------------------------------------------
+
+void
+ThreadTest2()
+{
+    Thread *t = new Thread("Forked 1");
+    
+    t->Fork(SimpleThread, 1);
+    
+    t = new Thread("Forked 2");
+    
+    t->Fork(SimpleThread, 2);
+}
+
+//----------------------------------------------------------------------
+// ThreadTest3
+// 	Call SimpleThread2
+//	Every SimpleThread2 create two new SimpleThread2.
+//----------------------------------------------------------------------
+
+void
+ThreadTest3()
+{
+    Thread *t = new Thread("Forked 1");
+    
+    t->Fork(SimpleThread2, 1);
+}
+
+//----------------------------------------------------------------------
+// ThreadTest4
+// 	Test TS Command
+//----------------------------------------------------------------------
+
+void
+ThreadTest4()
+{
+    ThreadTest2();
+    PrintThreadsStatus();
+}
+
+//----------------------------------------------------------------------
 // ThreadTest
 // 	Invoke a test routine.
 //----------------------------------------------------------------------
@@ -64,6 +130,15 @@ ThreadTest()
     case 1:
 	ThreadTest1();
 	break;
+    case 2:
+    ThreadTest2();
+    break;
+    case 3:
+    ThreadTest3();
+    break;
+    case 4:
+    ThreadTest4();
+    break;
     default:
 	printf("No test specified.\n");
 	break;

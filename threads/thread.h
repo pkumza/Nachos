@@ -102,8 +102,16 @@ class Thread {
     char* getName() { return (name); }
     void Print() { printf("%s, ", name); }
 
+    int GetUserID();
+    void SetUserID(int _id);
+    int GetThreadID();
+    void SetThreadID(int _id);
+
   private:
     // some of the private data for this class is listed above
+    
+    int userID;         // User ID Zach
+    int threadID;       // Thread ID Zach
     
     int* stack; 	 		// Bottom of the stack 
 					// NULL if this is the main thread

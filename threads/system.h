@@ -19,8 +19,15 @@
 // Initialization and cleanup routines
 extern void Initialize(int argc, char **argv); 	// Initialization,
 						// called before anything else
+extern void PrintThreadsStatus();    // For TS Command
 extern void Cleanup();				// Cleanup, called when
 						// Nachos is done.
+
+#define MAX_THREAD_NUM 128
+
+extern int threadCount;
+extern int threadIDList[MAX_THREAD_NUM];
+extern Thread *allThreads[MAX_THREAD_NUM];
 
 extern Thread *currentThread;			// the thread holding the CPU
 extern Thread *threadToBeDestroyed;  		// the thread that just finished

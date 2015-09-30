@@ -11,6 +11,10 @@
 // This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.
 
+int threadCount;
+int threadIDList[MAX_THREAD_NUM];
+Thread *allThreads[MAX_THREAD_NUM];
+
 Thread *currentThread;			// the thread we are running now
 Thread *threadToBeDestroyed;  		// the thread that just finished
 Scheduler *scheduler;			// the ready list
@@ -80,6 +84,11 @@ Initialize(int argc, char **argv)
     int argCount;
     char* debugArgs = "";
     bool randomYield = FALSE;
+    
+    threadCount = 0;        // Init threads. 
+    for (int i = 1; i < MAX_THREAD_NUM; i++) {
+        allThreads[i] = NULL;
+    }
 
 #ifdef USER_PROGRAM
     bool debugUserProg = FALSE;	// single step user program
@@ -142,6 +151,8 @@ Initialize(int argc, char **argv)
     // But if it ever tries to give up the CPU, we better have a Thread
     // object to save its state. 
     currentThread = new Thread("main");		
+    allThreads[0] = currentThread;      // We Already have a main thread.
+    threadCount++;
     currentThread->setStatus(RUNNING);
 
     interrupt->Enable();
@@ -162,6 +173,23 @@ Initialize(int argc, char **argv)
 #ifdef NETWORK
     postOffice = new PostOffice(netname, rely, 10);
 #endif
+}
+
+//----------------------------------------------------------------------
+// Print Threads Status (TS)
+// 	Print all threads' status in Nachos.
+//----------------------------------------------------------------------
+
+void
+PrintThreadsStatus()
+{
+    printf("*************** Threads Status ***************\n");
+    for(int i = 0; i < MAX_THREAD_NUM; i++) {
+        if (allThreads[i] != NULL) {
+            printf("  Thread %d, ID: %d \n",i , allThreads[i]->GetThreadID());
+        }
+    }
+    printf("**********************************************\n");
 }
 
 //----------------------------------------------------------------------
